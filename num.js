@@ -1,4 +1,4 @@
-function primes(n,all=false) {
+function primes(n,all=true) {
     let l = []
     let z = []
     let p = []
