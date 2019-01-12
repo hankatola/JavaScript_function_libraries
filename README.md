@@ -7,3 +7,6 @@ Functions include:
         returns n!
     primes(n,all=true)
         a prime number generator
+    nCr(n,r)
+        returns combinations
+        

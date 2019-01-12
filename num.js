@@ -41,3 +41,9 @@ function primes(n,all=true) {
     }
     return p
 }
+
+function nCr(n,r) {
+    // returns # of combinattions of size 'r' from population 'n'
+    return factorial(n) / (factorial(r) * factorial(n-r))
+}
+
