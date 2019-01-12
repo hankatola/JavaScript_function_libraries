@@ -3,5 +3,7 @@
 Contains math algorithms from my python work ported to JavaScript.
 
 Functions include:
-  primes(n,all=true)
-    a prime number generator
+    factorial(n)
+        returns n!
+    primes(n,all=true)
+        a prime number generator

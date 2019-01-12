@@ -1,3 +1,12 @@
+function factorial(n) {
+    // factorial function
+    let x = 1
+    for (let i = 2; i <= n; i++) {
+        x = x * i
+    }
+    return x
+}
+
 function primes(n,all=true) {
     /*
         uses the Sieve of Eratosthenes to generate a list of prime numbers up to 'n', inclusive
