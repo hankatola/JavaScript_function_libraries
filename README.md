@@ -8,5 +8,6 @@ Functions include:
     primes(n,all=true)
         a prime number generator
     nCr(n,r)
-        returns combinations
-        
+        returns combinations of size r from population n
+    nPr(n,r)
+        returns permuations of size r from population n

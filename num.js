@@ -47,3 +47,7 @@ function nCr(n,r) {
     return factorial(n) / (factorial(r) * factorial(n-r))
 }
 
+function nPr(n,r) {
+    // returns permutations of size r from population n
+    return factorial(n) / factorial(n-r)
+}
