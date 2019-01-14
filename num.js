@@ -61,14 +61,8 @@ function binomial(n,k,p,cumulative=false,get=false,precision=false) {
     // choose k with probability p from population n
     // precision defaults to 10^-6. Cumulative available
     let q = 1 - p
-    let ans = {
-        p:0.0,
-        avg:0.0,
-        v:0.0
-    }
+    let ans = {p:0,avg:0,v:0}
     if (cumulative === true) {
-        ans.p = 0
-
         for (let i = 0; i < k + 1; i++) {
             ans.p += nCr(n,i) * Math.pow(p,i) * Math.pow(q, n-i)
         }
@@ -85,3 +79,29 @@ function binomial(n,k,p,cumulative=false,get=false,precision=false) {
     if (get) {ans = ans[get]}
     return ans
 }
+
+function negative_binomial(r,k,p,cumulative=false,get=false,precision=false) {
+    // returns p of k failures before the 'r'th success where p(success) = 'p'.
+    // Cumulative available, precision defaults to 6 decimal places
+    let q = 1 - p
+    let x = r + k - 1
+    let y = r - 1
+    let ans = {p:0,avg:0,v:0}
+    if (cumulative===true) {
+        for (let i = 0; i < k + 1; i++) {
+            x = r + i - 1
+            ans.p += nCr(x,y) * Math.pow(p,r) * Math.pow(q,i)
+        }
+    } else {
+        ans.p = nCr(x,y) * Math.pow(p,r) * Math.pow(q,k)
+    }
+    ans.avg = q / p
+    ans.v = ans.avg / p
+    if (precision===false) {precision=6}
+    ans.p = round(ans.p,precision)
+    ans.avg = round(ans.avg,precision)
+    ans.v = round(ans.v,precision)
+    if (get) {ans = ans['get']}
+    return ans
+}
+
