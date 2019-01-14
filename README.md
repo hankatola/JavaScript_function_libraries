@@ -21,4 +21,8 @@ Functions include:
         returns prob of 'k' failures before 'r'th success when p(success) = 'p'
         Cumulative available. Precision defaults to 6 decimal places.
         Returns object unless get == ('p' || 'v' || 'avg')
-        
+    hypergeometric(N,n,r,k,cumulative=false,get=false,precision=false)
+        Choose 'n' from a population of 'N', seeking 'k' target items when target
+        population is 'r'. 
+        Cumulative available. Precision defaults to 6 decimal places.
+        Returns object unless get == ('p' || 'v' || 'avg')

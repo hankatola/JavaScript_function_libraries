@@ -105,3 +105,27 @@ function negative_binomial(r,k,p,cumulative=false,get=false,precision=false) {
     return ans
 }
 
+function hypergeometric(N,n,r,k,cumulative=false,get=false,precision=false) {
+    // Choosing 'n' out of a total population of 'N', returns the probability of
+    // returning 'k' targets when target population is 'r'. Precision defaults to 6
+    // decimal places. Cumulative available.
+    let N_minus_r = N - r
+    let n_minus_k = n - k
+    let ans = {p:0,avg:0,v:0}
+    if (cumulative===true) {
+        for (let i = 0; i < k + 1; i++) {
+            n_minus_k = n - i
+            ans.p += (nCr(r,i) * nCr(N_minus_r,n_minus_k)) / nCr(N,n)
+        }
+    } else {
+        ans.p = (nCr(r,k) * nCr(N_minus_r,n_minus_k)) / nCr(N,n)
+    }
+    ans.avg = n * r / N
+    ans.v = ans.avg * (1 - r / N) * ((N - n) / (N - 1))
+    if (precision===false) {precision=6}
+    ans.p = round(ans.p,precision)
+    ans.avg = round(ans.avg,precision)
+    ans.v = round(ans.v,precision)
+    if (get) {ans = ans['get']}
+    return ans
+}
