@@ -1,3 +1,12 @@
+function sum(a,b=false) {
+    // returns summation of an array or two numbers
+    let z
+    function add(a,b) {return a + b}
+    if (b === false) {z = a.reduce(add,0)}
+    else {z = a + b}
+    return z
+}
+
 function round(n,p) {
     // like ms excel round
     return Math.round(n * Math.pow(10,p)) / Math.pow(10,p)
@@ -163,3 +172,21 @@ function fibonacci(n,position=false) {
     return ans
 }
 
+function bernoulli(n,entireRow=false) {
+//  Academic paper describing process can be found at:
+//      https://www.research-collection.ethz.ch/bitstream/handle/20.500.11850/69248/eth-4937-01.pdf?sequence=1&isAllowed=y
+//  For the purposes of the algorithm, the triangle (here 't') has been flipped on the x-axis so that the bernoulli number
+//  ends up in the last column of the row, rather than the first. This switch means that the faulhaber coefficient in
+//  [row(x),column(y)] = [x-1,y] * [x,y], rather than [x-1,y-1] * [x,y] as described in the paper. Also it makes more sense
+//  to me.
+    let t = []
+    for (let i = 0; i < n + 1; i++) {t.push(0)}
+    for (let row = 0; row < n + 1; row++) {
+        let i = 0
+        for (let column = row + 1; column >= 1; column--) {
+            t[i] *= fraction(row,column)
+            i++
+        }
+        t[row] = 1 - 
+    }
+}

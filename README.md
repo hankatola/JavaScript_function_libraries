@@ -3,6 +3,8 @@
 Contains math algorithms from my python work ported to JavaScript.
 
 Functions include:
+    sum(a,b=false)
+        returns summation of array or two numbers
     round(n,p)
         works like ms excel & python round()
     factorial(n)
