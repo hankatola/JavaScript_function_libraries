@@ -30,3 +30,6 @@ Functions include:
         returns probability of 'k' events given mean & variance of 'rate_lambda'
         Cumulative available. Precision defaults to 6 decimal places.
         Does not return object since mean === variance === rate_lambda
+    fibonacci(n,position=false)
+        returns the n'th fibonacci number OR the position of the given fibonacci number
+        if position === true

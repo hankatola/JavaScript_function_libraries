@@ -146,3 +146,20 @@ function poisson(rate_lambda,k,cumulative=false,precision=false) {
     return round(p,precision)
 }
 
+function fibonacci(n,position=false) {
+    // returns the n'th fibonacci number or the position of fibonacci number 'n'
+    // if position === true
+    let x = (1 + Math.sqrt(5)) / 2
+    let y = (1 - Math.sqrt(5)) / 2
+    let ans = 0
+    if (position===false) {
+        n++
+        ans = (Math.pow(x,n) - Math.pow(y,n)) / Math.sqrt(5)
+        ans = round(ans,0)
+    } else {
+        ans = Math.log(n * Math.sqrt(5)) / Math.log(x)
+        ans = Math.floor(ans) - 1
+    }
+    return ans
+}
+
