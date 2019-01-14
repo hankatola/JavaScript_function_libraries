@@ -1,4 +1,4 @@
-function sum(a,b=false) {
+function sum_array(a,b=false) {
     // returns summation of an array or two numbers
     let z
     function add(a,b) {return a + b}
@@ -179,14 +179,26 @@ function bernoulli(n,entireRow=false) {
 //  ends up in the last column of the row, rather than the first. This switch means that the faulhaber coefficient in
 //  [row(x),column(y)] = [x-1,y] * [x,y], rather than [x-1,y-1] * [x,y] as described in the paper. Also it makes more sense
 //  to me.
+    function sum(a) {
+        // returns summation of array 'a' using math.add & math.fraction
+        function add(a,b) {
+            return math.add(math.fraction(a),math.fraction(b))
+        }
+        return a.reduce(add,0)
+    }
     let t = []
-    for (let i = 0; i < n + 1; i++) {t.push(0)}
+    for (let i = 0; i < n + 1; i++) {
+        t.push(0)
+    }
+    // creates faulhaber triangle row by row
     for (let row = 0; row < n + 1; row++) {
         let i = 0
         for (let column = row + 1; column >= 1; column--) {
-            t[i] *= fraction(row,column)
+            t[i] = math.multiply(math.fraction(t[i]), math.fraction(row,column))
             i++
         }
-        t[row] = 1 - 
+        t[row] = math.add(math.fraction(1), -math.fraction(sum(t)))
     }
+    if (entireRow === false) {t = t[t.length-1]}
+    return t
 }

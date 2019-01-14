@@ -3,7 +3,7 @@
 Contains math algorithms from my python work ported to JavaScript.
 
 Functions include:
-    sum(a,b=false)
+    sum_array(a,b=false)
         returns summation of array or two numbers
     round(n,p)
         works like ms excel & python round()
@@ -35,3 +35,8 @@ Functions include:
     fibonacci(n,position=false)
         returns the n'th fibonacci number OR the position of the given fibonacci number
         if position === true
+    bernoulli(n,entireRow=false)
+        generates bernoulli numbers via the faulhaber triangle. See
+            https://www.research-collection.ethz.ch/bitstream/handle/20.500.11850/69248/eth-4937-01.pdf?sequence=1&isAllowed=y
+        for description of process.
+        Returns the entire last row of the triangle if entireRow === true
