@@ -129,3 +129,20 @@ function hypergeometric(N,n,r,k,cumulative=false,get=false,precision=false) {
     if (get) {ans = ans['get']}
     return ans
 }
+
+function poisson(rate_lambda,k,cumulative=false,precision=false) {
+    // returns probability of 'k' events given mean & variance of 'rate_lambda'.
+    // precision defaults to 6 decimals, cumulative available.
+    // does not return object since avg = var = rate_lambda
+    let p = 0
+    if (cumulative===true) {
+        for (let i = 0; i < k + 1; i++) {
+            p += (Math.pow(rate_lambda,i) * Math.pow(Math.E,-rate_lambda)) / factorial(i)
+        }
+    } else {
+        p = (Math.pow(rate_lambda,k) * Math.pow(Math.E,-rate_lambda)) / factorial(k)
+    }
+    if (precision===false) {precision=6}
+    return round(p,precision)
+}
+

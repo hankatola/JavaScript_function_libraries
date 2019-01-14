@@ -23,6 +23,10 @@ Functions include:
         Returns object unless get == ('p' || 'v' || 'avg')
     hypergeometric(N,n,r,k,cumulative=false,get=false,precision=false)
         Choose 'n' from a population of 'N', seeking 'k' target items when target
-        population is 'r'. 
+        population is 'r'.
         Cumulative available. Precision defaults to 6 decimal places.
         Returns object unless get == ('p' || 'v' || 'avg')
+    poisson(rate_lambda,k,cumulative=false,precision=false)
+        returns probability of 'k' events given mean & variance of 'rate_lambda'
+        Cumulative available. Precision defaults to 6 decimal places.
+        Does not return object since mean === variance === rate_lambda
