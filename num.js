@@ -7,7 +7,7 @@ function sum_array(a,b=false) {
     return z
 }
 
-function round(n,p) {
+function round(n,p=0) {
     // like ms excel round
     return Math.round(n * Math.pow(10,p)) / Math.pow(10,p)
 }
@@ -35,12 +35,16 @@ function primes(n,all=true) {
     /*  loop through and record the multiples of the primes. For each number 'i' in
         list 'l', move in steps of 'i' through list 'z' and indicate that l[i]
         is composite. Each time we go through we must start at position i + c
-        to ensure we move through 'z' correctly.
+        to ensure we move through 'z' correctly. We can stop when l[i] > max(l) / 3
+        b/c of the way the algorithm works, and we can skip any number that is marked
+        as composite via z[i] === 1.
     */
     let c = 0                                       // c is the counter and ensures we move through the list 'l' correctly
-    for (let i in l) {
-        for (let j=l[i]+c; j in l; j=j+l[i]) {
-            z[j] = 1
+    for (let i = 0; i < Math.floor(l[l.length-1] / 3); i++) {
+        if (z[i] === 0) {
+            for (let j = l[i] + c; j in l; j = j + l[i]) {
+                z[j] = 1
+            }
         }
         c++
     }
@@ -50,10 +54,29 @@ function primes(n,all=true) {
     if (n >= 2) {                                   // add 2 to the list if it's big enough
         p.unshift(2)
     }
-    if (all===false) {
+    if (all === false) {
         p = p[p.length - 1]
     }
     return p
+}
+
+function primeFactors(n) {
+    // can ignore any number > sqrt(n)
+    let p = primes(Math.floor(Math.sqrt(Math.abs(n))))
+    let f = []
+    // add 1 or -1 to the list
+    if (n < 0) {
+        f.push(-1)
+    } else {f.push(1)
+    }
+    for (let i in p) {              // loop through prime list
+        while (n % p[i] === 0) {    // while evenly divisible by prime 'p[i]'
+            f.push(p[i])            // push p[i] to list &
+            n /= p[i]               // make n smaller
+        }
+    }
+    if (n > 1) {f.push(n)}          // push whatever we're left with - it's prime
+    return f
 }
 
 function nCr(n,r) {
@@ -164,7 +187,7 @@ function fibonacci(n,position=false) {
     if (position===false) {
         n++
         ans = (Math.pow(x,n) - Math.pow(y,n)) / Math.sqrt(5)
-        ans = round(ans,0)
+        ans = Math.round(ans)
     } else {
         ans = Math.log(n * Math.sqrt(5)) / Math.log(x)
         ans = Math.floor(ans) - 1
@@ -182,7 +205,7 @@ function bernoulli(n,entireRow=false) {
     function sum(a) {
         // returns summation of array 'a' using math.add & math.fraction
         function add(a,b) {
-            return math.add(math.fraction(a),math.fraction(b))
+            return math.add(math.fraction(a), math.fraction(b))
         }
         return a.reduce(add,0)
     }
@@ -201,4 +224,31 @@ function bernoulli(n,entireRow=false) {
     }
     if (entireRow === false) {t = t[t.length-1]}
     return t
+}
+
+function summation(n,x=1) {
+    // Returns the summation of the first 'n' numbers to the 'x'th power (if entered)
+    // using Bernoulli's formula. See https://en.wikipedia.org/wiki/Faulhaber%27s_formula
+    // for a description.
+    let Bn = bernoulli(x,true)
+    let r = Bn.length
+    let i = 0
+    x = 0
+    for (let j = 0; j < r; j++) {
+        x += math.multiply(math.fraction(Bn[j]),math.fraction(math.pow(n, r - i)))
+        i += 1
+    }
+    return round(x)
+}
+
+function fraction(n,d=1) {
+    n = primeFactors(n)
+    d = primeFactors(d)
+    for (let i in n) {
+        if (d.indexOf(n[i]) != -1) {
+            d.splice(d.indexOf(n[i]),1)
+            n.splice(i,1)
+        }
+    }
+    return [n,d]
 }
