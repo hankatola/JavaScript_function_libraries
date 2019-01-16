@@ -1,5 +1,9 @@
 function sum(a,b=0) {
-    // handles fractions
+    /*  Dependencies:
+            fraction()
+    */
+
+    // fraction handler
     if (a.type === 'fraction' || b.type === 'fraction') {
         if (a.type !== 'fraction') {a = fraction(a)}
         if (b.type !== 'fraction') {b = fraction(b)}
@@ -26,6 +30,10 @@ function sum(a,b=0) {
 }
 
 function subtract(a,b=0) {
+    /*  Dependencies:
+            fraction()
+    */
+
     // fraction handler
     if (a.type === 'fraction') {
         if (b.type !== 'fraction') {b = fraction(b)}
@@ -51,6 +59,10 @@ function subtract(a,b=0) {
 }
 
 function multiply(a,b=1) {
+    /*  Dependencies:
+            fraction()
+    */
+
     // fraction handler
     if (a.type === 'fraction') {
         if (b.type !== 'fraction') {b = fraction(b)}
@@ -76,6 +88,10 @@ function multiply(a,b=1) {
 }
 
 function divide(a,b=1) {
+    /*  Dependencies:
+            fraction()
+    */
+
     // fraction handler
     if (a.type === 'fraction') {
         if (b.type !== 'fraction') {b = fraction(b)}
@@ -101,8 +117,12 @@ function divide(a,b=1) {
 }
 
 function power(a,b=1) {
+    /*  Dependencies:
+            fraction()
+    */
+
     // fraction handler
-    if (a.type === 'fraction') {
+   if (a.type === 'fraction') {
         if (b.type !== 'fraction') {b = fraction(b)}
         let n = Math.pow(Math.pow(a.n, b.n), 1/b.d)
         let d = Math.pow(Math.pow(a.d, b.n), 1/b.d)
@@ -120,17 +140,23 @@ function power(a,b=1) {
 }
 
 function round(n,p=0) {
-    // like ms excel round
-    if (n.type === 'fraction') {n = divide(n.n,n.d)}
+    /*  Dependencies: NONE
+    */
+
+    // fraction handler
+    if (n.type === 'fraction') {n = n.n / n.d}
     return Math.round(n * Math.pow(10,p)) / Math.pow(10,p)
 }
 
 function fraction(n,d=1) {
-    /*
-        Capabilities:
+    /*  Capabilities:
             Returns fractions from integers, floats, or strings.
             However, will return rounding errors if repeating decimals
             are passed - i.e. 1/7.
+        Dependencies:
+            primeFactors()
+            multiply()
+            divide()
     */
     function clean(x) {
         let powOfTen = 0, type = ''
@@ -186,22 +212,23 @@ function fraction(n,d=1) {
         n = clean(n)
         d = clean(d)
         if (n.type === 'error' || d.type === 'error') {return 'error - invalid data type'}
-        return makeFraction(n,d)    
+        return makeFraction(n,d)
     }
 }
 
 function factorial(n) {
-    // factorial function
-    let x = 1
+    /*  Dependencies: NONE
+    */
+   let x = 1
     for (let i = 2; i <= n; i++) {
-        x = x * i
+        x *= i
     }
     return x
 }
 
 function primes(n,all=true) {
-    /*
-        uses the Sieve of Eratosthenes to generate a list of prime numbers up to 'n', inclusive
+    /*  Uses the Sieve of Eratosthenes to generate a list of prime numbers up to 'n', inclusive
+        Dependencies: NONE
     */
     let l = []
     let z = []
@@ -239,8 +266,11 @@ function primes(n,all=true) {
 }
 
 function primeFactors(n) {
-    // can ignore any number > sqrt(n)
-    let p = primes(Math.floor(Math.sqrt(Math.abs(n))))
+    /*  Returns an array of prime factors of 'n'
+        Dependencies:
+            primes()
+    */
+    let p = primes(Math.floor(Math.sqrt(Math.abs(n))))  // can ignore any number > sqrt(n)
     let f = []
     // add 1 or -1 to the list
     if (n < 0) {
@@ -259,18 +289,29 @@ function primeFactors(n) {
 }
 
 function nCr(n,r) {
-    // returns # of combinattions of size 'r' from population 'n'
+    /*  Returns # of combinattions of size 'r' from population 'n'
+        Dependencies:
+            factorial()
+    */
     return factorial(n) / (factorial(r) * factorial(n-r))
 }
 
 function nPr(n,r) {
-    // returns permutations of size r from population n
+    /*  Returns permutations of size r from population n
+        Dependencies:
+            factorial()
+    */
     return factorial(n) / factorial(n-r)
 }
 
 function binomial(n,k,p,cumulative=false,get=false,precision=false) {
-    // choose k with probability p from population n
-    // precision defaults to 10^-6. Cumulative available
+    /*  Choose k with probability p from population n
+        precision defaults to 10^-6. Cumulative available
+
+        Dependencies:
+            nCr()
+            round()
+    */
     let q = 1 - p
     let ans = {p:0,avg:0,v:0}
     if (cumulative === true) {
@@ -292,8 +333,13 @@ function binomial(n,k,p,cumulative=false,get=false,precision=false) {
 }
 
 function negative_binomial(r,k,p,cumulative=false,get=false,precision=false) {
-    // returns p of k failures before the 'r'th success where p(success) = 'p'.
-    // Cumulative available, precision defaults to 6 decimal places
+    /*  Returns p of k failures before the 'r'th success where p(success) = 'p'.
+        Cumulative available, precision defaults to 6 decimal places
+
+        Dependencies:
+            nCr()
+            round()
+    */
     let q = 1 - p
     let x = r + k - 1
     let y = r - 1
@@ -317,9 +363,14 @@ function negative_binomial(r,k,p,cumulative=false,get=false,precision=false) {
 }
 
 function hypergeometric(N,n,r,k,cumulative=false,get=false,precision=false) {
-    // Choosing 'n' out of a total population of 'N', returns the probability of
-    // returning 'k' targets when target population is 'r'. Precision defaults to 6
-    // decimal places. Cumulative available.
+    /*  Choosing 'n' out of a total population of 'N', returns the probability of
+        returning 'k' targets when target population is 'r'. Precision defaults to 6
+        decimal places. Cumulative available.
+
+        Dependencies:
+            nCr()
+            round()
+    */
     let N_minus_r = N - r
     let n_minus_k = n - k
     let ans = {p:0,avg:0,v:0}
@@ -342,9 +393,14 @@ function hypergeometric(N,n,r,k,cumulative=false,get=false,precision=false) {
 }
 
 function poisson(rate_lambda,k,cumulative=false,precision=false) {
-    // returns probability of 'k' events given mean & variance of 'rate_lambda'.
-    // precision defaults to 6 decimals, cumulative available.
-    // does not return object since avg = var = rate_lambda
+    /*  Returns probability of 'k' events given mean & variance of 'rate_lambda'.
+        precision defaults to 6 decimals, cumulative available.
+        does not return object since avg = var = rate_lambda
+
+        Dependencies:
+            factorial()
+            round()
+    */
     let p = 0
     if (cumulative===true) {
         for (let i = 0; i < k + 1; i++) {
@@ -358,8 +414,10 @@ function poisson(rate_lambda,k,cumulative=false,precision=false) {
 }
 
 function fibonacci(n,position=false) {
-    // returns the n'th fibonacci number or the position of fibonacci number 'n'
-    // if position === true
+    /*  Returns the n'th fibonacci number or the position of fibonacci number 'n'
+        if position === true
+        Dependencies: NONE
+    */
     let x = (1 + Math.sqrt(5)) / 2
     let y = (1 - Math.sqrt(5)) / 2
     let ans = 0
@@ -375,12 +433,18 @@ function fibonacci(n,position=false) {
 }
 
 function bernoulli(n,entireRow=false) {
-//  Academic paper describing process can be found at:
-//      https://www.research-collection.ethz.ch/bitstream/handle/20.500.11850/69248/eth-4937-01.pdf?sequence=1&isAllowed=y
-//  For the purposes of the algorithm, the triangle (here 't') has been flipped on the x-axis so that the bernoulli number
-//  ends up in the last column of the row, rather than the first. This switch means that the faulhaber coefficient in
-//  [row(x),column(y)] = [x-1,y] * [x,y], rather than [x-1,y-1] * [x,y] as described in the paper. Also it makes more sense
-//  to me.
+    /*  Academic paper describing process can be found at:
+            https://www.research-collection.ethz.ch/bitstream/handle/20.500.11850/69248/eth-4937-01.pdf?sequence=1&isAllowed=y
+        For the purposes of the algorithm, the triangle (here 't') has been flipped on the x-axis so that the bernoulli number
+        ends up in the last column of the row, rather than the first. This switch means that the faulhaber coefficient in
+        [row(x),column(y)] = [x-1,y] * [x,y], rather than [x-1,y-1] * [x,y] as described in the paper. Also it makes more sense
+        to me.
+
+        Dependencies:
+            multiply()
+            subtract()
+            fraction()
+    */
 
     let t = []
     for (let i = 0; i < n + 1; i++) {
@@ -400,16 +464,24 @@ function bernoulli(n,entireRow=false) {
 }
 
 function summation(n,x=1) {
-    // Returns the summation of the first 'n' numbers to the 'x'th power (if entered)
-    // using Bernoulli's formula. See https://en.wikipedia.org/wiki/Faulhaber%27s_formula
-    // for a description.
+    /*  Returns the summation of the first 'n' numbers to the 'x'th power (if entered)
+        using Bernoulli's formula. See https://en.wikipedia.org/wiki/Faulhaber%27s_formula
+        for a description.
+
+        Dependencies:
+            sum()
+            multiply()
+            power()
+            round()
+            bernoulli()
+    */
     let Bn = bernoulli(x,true)
     let r = Bn.length
     let i = 0
     x = 0
     for (let j = 0; j < r; j++) {
         x = sum(x,multiply(Bn[j],power(n,r - i)))
-        i += 1
+        i++
     }
     return round(x)
 }
