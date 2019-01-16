@@ -72,6 +72,7 @@ function divide(a,b=1) {
 }
 
 function power(a,b=1) {
+    // fraction handler
     if (a.type === 'fraction') {
         if (b.type !== 'fraction') {b = fraction(b)}
         let n = Math.pow(Math.pow(a.n, b.n), 1/b.d)
