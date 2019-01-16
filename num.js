@@ -1,20 +1,28 @@
-function add(a,b=0) {
+function sum(a,b=0) {
     // handles fractions
-    if (a.type === 'fraction') {
+    if (a.type === 'fraction' || b.type === 'fraction') {
+        if (a.type !== 'fraction') {a = fraction(a)}
         if (b.type !== 'fraction') {b = fraction(b)}
         let n = a.n * b.d + b.n * a.d
         let d = a.d * b.d
         return fraction(n,d)
     }
     // returns summation of an array or two numbers
-    function addArray(x) {
+    function sumArray(x) {
         let z = 0
-        for (let i in x) {z += x[i]}
+        for (let i in x) {
+            if (x[i].type === 'fraction' || z.type === 'fraction') {
+                z = sum(z,x[i])
+            } else {z += x[i]}
+        }
         return z
     }
-    if (typeof(a) === 'object') {a = addArray(a)}
-    if (typeof(b) === 'object') {b = addArray(b)}
-    return a + b
+    if (typeof(a) === 'object') {a = sumArray(a)}
+    if (typeof(b) === 'object') {b = sumArray(b)}
+    let z
+    if (a.type === 'fraction') {z = a}
+    else {z = a + b}
+    return z
 }
 
 function subtract(a,b=0) {
@@ -27,12 +35,19 @@ function subtract(a,b=0) {
     }
     function subtractArray(x) {
         let z = 0
-        for (let i in x) {z += x[i]}
+        for (let i in x) {
+            if (x[i].type === 'fraction' || z.type === 'fraction') {
+                z = subtract(z,x[i])
+            } else {z -= x[i]}
+        }
         return z
     }
     if (typeof(a) === 'object') {a = subtractArray(a)}
     if (typeof(b) === 'object') {b = subtractArray(b)}
-    return a - b
+    let z
+    if (a.type === 'fraction') {z = a}
+    else {z = a - b}
+    return z
 }
 
 function multiply(a,b=1) {
@@ -45,12 +60,19 @@ function multiply(a,b=1) {
     }
     function gammaArray(x) {
         let a = 1
-        for (let i in x) {a *= x[i]}
+        for (let i in x) {
+            if (a.type === 'fraction' || x[i].type === 'fraction') {
+                a = multiply(a,x[i])
+            } else {a *= x[i]}
+        }
         return a
     }
     if (typeof(a) === 'object') {a = gammaArray(a)}
     if (typeof(b) === 'object') {b = gammaArray(b)}
-    return a * b
+    let z
+    if (a.type === 'fraction') {z = a}
+    else {z = a * b}
+    return z
 }
 
 function divide(a,b=1) {
@@ -63,12 +85,19 @@ function divide(a,b=1) {
     }
     function divideArray(x) {
         let a = 1
-        for (let i in x) {a /= x[i]}
+        for (let i in x) {
+            if (a.type === 'fraction' || x[i].type === 'fraction') {
+                a = divide(a,x[i])
+            } else {a /= x[i]}
+        }
         return a
     }
     if (typeof(a) === 'object') {a = divideArray(a)}
     if (typeof(b) === 'object') {b = divideArray(b)}
-    return a / b
+    let z
+    if (a.type === 'fraction') {z = a}
+    else {z = a / b}
+    return z
 }
 
 function power(a,b=1) {
@@ -92,7 +121,73 @@ function power(a,b=1) {
 
 function round(n,p=0) {
     // like ms excel round
+    if (n.type === 'fraction') {n = divide(n.n,n.d)}
     return Math.round(n * Math.pow(10,p)) / Math.pow(10,p)
+}
+
+function fraction(n,d=1) {
+    /*
+        Capabilities:
+            Returns fractions from integers, floats, or strings.
+            However, will return rounding errors if repeating decimals
+            are passed - i.e. 1/7.
+    */
+    function clean(x) {
+        let powOfTen = 0, type = ''
+        if (x.type === 'fraction') {return x}
+        if (typeof(x) === 'string') {x = eval(x)}
+        if (x%1 !== 0) {        // x is a float
+            x = x.toString()
+            powOfTen = x.length - x.indexOf('.') - 1
+            x = parseFloat(x) * Math.pow(10, powOfTen)
+            type = 'int'
+        }
+        else if (x%1 === 0) {        // x is an integer
+            // it's an integer
+            type = 'int'
+        } else {                                                // x is an invalid value
+            type = 'error'
+        }
+        x = {'x':x,'type':type,'powOfTen':powOfTen}
+        return x
+    }
+
+    function simplify(n,d) {
+        // returns simplified fraction object
+        n = primeFactors(n)                     // numerator
+        d = primeFactors(d)                     // denominator
+        for (let i = 0; i < n.length; i++) {    // simplifies n & d
+            if (d.indexOf(n[i]) != -1) {
+                d.splice(d.indexOf(n[i]),1)
+                n.splice(i,1)
+                i--
+            }
+        }
+        n = multiply(n)
+        d = multiply(d)
+        return {'n':n,'d':d,'print':n.toString() + ' / ' + d.toString(),'type':'fraction'}
+    }
+
+    function makeFraction(n,d) {
+        if (n.powOfTen !== d.powOfTen) {
+            // adjust n or d
+            if (n.powOfTen > d.powOfTen) {          // adjust d
+                d.x = d.x * Math.pow(10, n.powOfTen - d.powOfTen)
+            } else {                                // adjust n
+                n.x = n.x * Math.pow(10, d.powOfTen - n.powOfTen)
+            }
+        }
+        return simplify(n.x,d.x)
+    }
+
+    if (n.type === 'fraction' && d === 1) {return n}    // no need to do math here.
+    if (n.type === 'fraction') {return divide(n,d)}     // divide can handle frac / int
+    else {                                              // make a fraction
+        n = clean(n)
+        d = clean(d)
+        if (n.type === 'error' || d.type === 'error') {return 'error - invalid data type'}
+        return makeFraction(n,d)    
+    }
 }
 
 function factorial(n) {
@@ -151,8 +246,8 @@ function primeFactors(n) {
     if (n < 0) {
         f.push(-1)
         n = -n
-    } else {f.push(1)
-    }
+    } else if (n > 0) {f.push(1)
+    } else {f.push(0)}
     for (let i in p) {              // loop through prime list
         while (n % p[i] === 0) {    // while evenly divisible by prime 'p[i]'
             f.push(p[i])            // push p[i] to list &
@@ -286,13 +381,7 @@ function bernoulli(n,entireRow=false) {
 //  ends up in the last column of the row, rather than the first. This switch means that the faulhaber coefficient in
 //  [row(x),column(y)] = [x-1,y] * [x,y], rather than [x-1,y-1] * [x,y] as described in the paper. Also it makes more sense
 //  to me.
-    function sum(a) {
-        // returns summation of array 'a' using math.add & math.fraction
-        function add(a,b) {
-            return math.add(math.fraction(a), math.fraction(b))
-        }
-        return a.reduce(add,0)
-    }
+
     let t = []
     for (let i = 0; i < n + 1; i++) {
         t.push(0)
@@ -301,10 +390,10 @@ function bernoulli(n,entireRow=false) {
     for (let row = 0; row < n + 1; row++) {
         let i = 0
         for (let column = row + 1; column >= 1; column--) {
-            t[i] = math.multiply(math.fraction(t[i]), math.fraction(row,column))
+            t[i] = multiply(fraction(t[i]), fraction(row,column))
             i++
         }
-        t[row] = math.add(math.fraction(1), -math.fraction(sum(t)))
+        t[row] = subtract(fraction(1), fraction(sum(t)))
     }
     if (entireRow === false) {t = t[t.length-1]}
     return t
@@ -319,68 +408,8 @@ function summation(n,x=1) {
     let i = 0
     x = 0
     for (let j = 0; j < r; j++) {
-        x += math.multiply(math.fraction(Bn[j]),math.fraction(math.pow(n, r - i)))
+        x = sum(x,multiply(Bn[j],power(n,r - i)))
         i += 1
     }
     return round(x)
-}
-
-function fraction(n,d=1) {
-    /*
-        Capabilities:
-            Returns fractions from integers, floats, or strings.
-            However, will return rounding errors if repeating decimals
-            are passed - i.e. 1/7.
-    */
-    function clean(x) {
-        let powOfTen = 0, type = ''
-        if (x.type === 'fraction') {return x}
-        if (typeof(x) === 'string') {x = eval(x)}
-        if (x%1 !== 0) {        // x is a float
-            x = x.toString()
-            powOfTen = x.length - x.indexOf('.') - 1
-            x = parseFloat(x) * Math.pow(10, powOfTen)
-            type = 'int'
-        }
-        else if (x%1 === 0) {        // x is an integer
-            // it's an integer
-            type = 'int'
-        } else {                                                // x is an invalid value
-            type = 'error'
-        }
-        x = {'x':x,'type':type,'powOfTen':powOfTen}
-        return x
-    }
-
-    function simplify(n,d) {
-        // returns simplified fraction object
-        n = primeFactors(n)                     // numerator
-        d = primeFactors(d)                     // denominator
-        for (let i = 0; i < n.length; i++) {    // simplifies n & d
-            if (d.indexOf(n[i]) != -1) {
-                d.splice(d.indexOf(n[i]),1)
-                n.splice(i,1)
-                i--
-            }
-        }
-        n = multiply(n)
-        d = multiply(d)
-        return {'n':n,'d':d,'print':n.toString() + ' / ' + d.toString(),'type':'fraction'}
-    }
-
-    function makeFraction(n,d) {
-        if (n.powOfTen !== d.powOfTen) {
-            // adjust n or d
-            if (n.powOfTen > d.powOfTen) {          // adjust d
-                d.x = d.x * Math.pow(10, n.powOfTen - d.powOfTen)
-            } else {                                // adjust n
-                n.x = n.x * Math.pow(10, d.powOfTen - n.powOfTen)
-            }
-        }
-        return simplify(n.x,d.x)
-    }
-    n = clean(n)
-    d = clean(d)
-    if (n.type === 'error' || d.type === 'error') {return 'error - invalid data type'}
-    return makeFraction(n,d)
 }
