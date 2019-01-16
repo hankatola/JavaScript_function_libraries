@@ -1,10 +1,92 @@
-function sum_array(a,b=false) {
+function add(a,b=0) {
+    // handles fractions
+    if (a.type === 'fraction') {
+        if (b.type !== 'fraction') {b = fraction(b)}
+        let n = a.n * b.d + b.n * a.d
+        let d = a.d * b.d
+        return fraction(n,d)
+    }
     // returns summation of an array or two numbers
-    let z
-    function add(a,b) {return a + b}
-    if (b === false) {z = a.reduce(add,0)}
-    else {z = a + b}
-    return z
+    function addArray(x) {
+        let z = 0
+        for (let i in x) {z += x[i]}
+        return z
+    }
+    if (typeof(a) === 'object') {a = addArray(a)}
+    if (typeof(b) === 'object') {b = addArray(b)}
+    return a + b
+}
+
+function subtract(a,b=0) {
+    // fraction handler
+    if (a.type === 'fraction') {
+        if (b.type !== 'fraction') {b = fraction(b)}
+        let n = a.n * b.d - b.n * a.d
+        let d = a.d * b.d
+        return fraction(n,d)
+    }
+    function subtractArray(x) {
+        let z = 0
+        for (let i in x) {z += x[i]}
+        return z
+    }
+    if (typeof(a) === 'object') {a = subtractArray(a)}
+    if (typeof(b) === 'object') {b = subtractArray(b)}
+    return a - b
+}
+
+function multiply(a,b=1) {
+    // fraction handler
+    if (a.type === 'fraction') {
+        if (b.type !== 'fraction') {b = fraction(b)}
+        let n = a.n * b.n
+        let d = a.d * b.d
+        return fraction(n,d)
+    }
+    function gammaArray(x) {
+        let a = 1
+        for (let i in x) {a *= x[i]}
+        return a
+    }
+    if (typeof(a) === 'object') {a = gammaArray(a)}
+    if (typeof(b) === 'object') {b = gammaArray(b)}
+    return a * b
+}
+
+function divide(a,b=1) {
+    // fraction handler
+    if (a.type === 'fraction') {
+        if (b.type !== 'fraction') {b = fraction(b)}
+        let n = a.n * b.d
+        let d = a.d * b.n
+        return fraction(n,d)
+    }
+    function divideArray(x) {
+        let a = 1
+        for (let i in x) {a /= x[i]}
+        return a
+    }
+    if (typeof(a) === 'object') {a = divideArray(a)}
+    if (typeof(b) === 'object') {b = divideArray(b)}
+    return a / b
+}
+
+function power(a,b=1) {
+    if (a.type === 'fraction') {
+        if (b.type !== 'fraction') {b = fraction(b)}
+        let n = Math.pow(Math.pow(a.n, b.n), 1/b.d)
+        let d = Math.pow(Math.pow(a.d, b.n), 1/b.d)
+        /*  if n or d are floats, evaluate float over float and return float result
+            rounded to 12 decimal places. This is because one of our roots was not
+            an integer, and so we can't simplify it accurately. The best thing we
+            can do is to do the division and then hopefully round the error off the end
+        */
+        if (n%1 !== 0 || d%1 !== 0) {
+            return round(n / d, 12)
+        }
+        return fraction(n,d)
+    }
+    return Math.pow(a,b)
 }
 
 function round(n,p=0) {
@@ -67,6 +149,7 @@ function primeFactors(n) {
     // add 1 or -1 to the list
     if (n < 0) {
         f.push(-1)
+        n = -n
     } else {f.push(1)
     }
     for (let i in p) {              // loop through prime list
@@ -242,13 +325,61 @@ function summation(n,x=1) {
 }
 
 function fraction(n,d=1) {
-    n = primeFactors(n)
-    d = primeFactors(d)
-    for (let i in n) {
-        if (d.indexOf(n[i]) != -1) {
-            d.splice(d.indexOf(n[i]),1)
-            n.splice(i,1)
+    /*
+        Capabilities:
+            Returns fractions from integers, floats, or strings.
+            However, will return rounding errors if repeating decimals
+            are passed - i.e. 1/7.
+    */
+    function clean(x) {
+        let powOfTen = 0, type = ''
+        if (x.type === 'fraction') {return x}
+        if (typeof(x) === 'string') {x = eval(x)}
+        if (x%1 !== 0) {        // x is a float
+            x = x.toString()
+            powOfTen = x.length - x.indexOf('.') - 1
+            x = parseFloat(x) * Math.pow(10, powOfTen)
+            type = 'int'
         }
+        else if (x%1 === 0) {        // x is an integer
+            // it's an integer
+            type = 'int'
+        } else {                                                // x is an invalid value
+            type = 'error'
+        }
+        x = {'x':x,'type':type,'powOfTen':powOfTen}
+        return x
     }
-    return [n,d]
+
+    function simplify(n,d) {
+        // returns simplified fraction object
+        n = primeFactors(n)                     // numerator
+        d = primeFactors(d)                     // denominator
+        for (let i = 0; i < n.length; i++) {    // simplifies n & d
+            if (d.indexOf(n[i]) != -1) {
+                d.splice(d.indexOf(n[i]),1)
+                n.splice(i,1)
+                i--
+            }
+        }
+        n = multiply(n)
+        d = multiply(d)
+        return {'n':n,'d':d,'print':n.toString() + ' / ' + d.toString(),'type':'fraction'}
+    }
+
+    function makeFraction(n,d) {
+        if (n.powOfTen !== d.powOfTen) {
+            // adjust n or d
+            if (n.powOfTen > d.powOfTen) {          // adjust d
+                d.x = d.x * Math.pow(10, n.powOfTen - d.powOfTen)
+            } else {                                // adjust n
+                n.x = n.x * Math.pow(10, d.powOfTen - n.powOfTen)
+            }
+        }
+        return simplify(n.x,d.x)
+    }
+    n = clean(n)
+    d = clean(d)
+    if (n.type === 'error' || d.type === 'error') {return 'error - invalid data type'}
+    return makeFraction(n,d)
 }
