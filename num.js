@@ -1,8 +1,8 @@
 function sum(a,b=0) {
-    /*  Dependencies:
+    /*  Does what you think. Handles fractions & arrays
+        Dependencies:
             fraction()
     */
-
     // fraction handler
     if (a.type === 'fraction' || b.type === 'fraction') {
         if (a.type !== 'fraction') {a = fraction(a)}
@@ -30,10 +30,10 @@ function sum(a,b=0) {
 }
 
 function subtract(a,b=0) {
-    /*  Dependencies:
+    /*  Does what you think & handles fractions & arrays
+        Dependencies:
             fraction()
     */
-
     // fraction handler
     if (a.type === 'fraction') {
         if (b.type !== 'fraction') {b = fraction(b)}
@@ -59,10 +59,10 @@ function subtract(a,b=0) {
 }
 
 function multiply(a,b=1) {
-    /*  Dependencies:
+    /*  Does what you think, handles fractions & arrays
+        Dependencies:
             fraction()
     */
-
     // fraction handler
     if (a.type === 'fraction') {
         if (b.type !== 'fraction') {b = fraction(b)}
@@ -88,10 +88,10 @@ function multiply(a,b=1) {
 }
 
 function divide(a,b=1) {
-    /*  Dependencies:
+    /*  Does what you think. Handles fractions & arrays (why?)
+        Dependencies:
             fraction()
     */
-
     // fraction handler
     if (a.type === 'fraction') {
         if (b.type !== 'fraction') {b = fraction(b)}
@@ -117,10 +117,10 @@ function divide(a,b=1) {
 }
 
 function power(a,b=1) {
-    /*  Dependencies:
+    /*  Like Math.pow, but handles fractions
+        Dependencies:
             fraction()
     */
-
     // fraction handler
    if (a.type === 'fraction') {
         if (b.type !== 'fraction') {b = fraction(b)}
@@ -140,9 +140,9 @@ function power(a,b=1) {
 }
 
 function round(n,p=0) {
-    /*  Dependencies: NONE
+    /*  Rounds n to 'p' precision
+        Dependencies: NONE
     */
-
     // fraction handler
     if (n.type === 'fraction') {n = n.n / n.d}
     return Math.round(n * Math.pow(10,p)) / Math.pow(10,p)
@@ -158,7 +158,8 @@ function fraction(n,d=1) {
             multiply()
             divide()
     */
-    function clean(x) {
+    // Function Farm
+    function clean(x) {                                 // cleans & prepares inputs to make fraction
         let powOfTen = 0, type = ''
         if (x.type === 'fraction') {return x}
         if (typeof(x) === 'string') {x = eval(x)}
@@ -177,9 +178,7 @@ function fraction(n,d=1) {
         x = {'x':x,'type':type,'powOfTen':powOfTen}
         return x
     }
-
-    function simplify(n,d) {
-        // returns simplified fraction object
+    function simplify(n,d) {                            // returns simplified fraction
         n = primeFactors(n)                     // numerator
         d = primeFactors(d)                     // denominator
         for (let i = 0; i < n.length; i++) {    // simplifies n & d
@@ -193,8 +192,7 @@ function fraction(n,d=1) {
         d = multiply(d)
         return {'n':n,'d':d,'print':n.toString() + ' / ' + d.toString(),'type':'fraction'}
     }
-
-    function makeFraction(n,d) {
+    function makeFraction(n,d) {                        // creates the fraction object
         if (n.powOfTen !== d.powOfTen) {
             // adjust n or d
             if (n.powOfTen > d.powOfTen) {          // adjust d
@@ -206,6 +204,7 @@ function fraction(n,d=1) {
         return simplify(n.x,d.x)
     }
 
+    // Logic
     if (n.type === 'fraction' && d === 1) {return n}    // no need to do math here.
     if (n.type === 'fraction') {return divide(n,d)}     // divide can handle frac / int
     else {                                              // make a fraction
@@ -217,7 +216,8 @@ function fraction(n,d=1) {
 }
 
 function factorial(n) {
-    /*  Dependencies: NONE
+    /*  Returns n!
+        Dependencies: NONE
     */
    let x = 1
     for (let i = 2; i <= n; i++) {
@@ -307,7 +307,6 @@ function nPr(n,r) {
 function binomial(n,k,p,cumulative=false,get=false,precision=false) {
     /*  Choose k with probability p from population n
         precision defaults to 10^-6. Cumulative available
-
         Dependencies:
             nCr()
             round()
@@ -335,7 +334,6 @@ function binomial(n,k,p,cumulative=false,get=false,precision=false) {
 function negative_binomial(r,k,p,cumulative=false,get=false,precision=false) {
     /*  Returns p of k failures before the 'r'th success where p(success) = 'p'.
         Cumulative available, precision defaults to 6 decimal places
-
         Dependencies:
             nCr()
             round()
@@ -366,7 +364,6 @@ function hypergeometric(N,n,r,k,cumulative=false,get=false,precision=false) {
     /*  Choosing 'n' out of a total population of 'N', returns the probability of
         returning 'k' targets when target population is 'r'. Precision defaults to 6
         decimal places. Cumulative available.
-
         Dependencies:
             nCr()
             round()
@@ -396,7 +393,6 @@ function poisson(rate_lambda,k,cumulative=false,precision=false) {
     /*  Returns probability of 'k' events given mean & variance of 'rate_lambda'.
         precision defaults to 6 decimals, cumulative available.
         does not return object since avg = var = rate_lambda
-
         Dependencies:
             factorial()
             round()
@@ -439,13 +435,11 @@ function bernoulli(n,entireRow=false) {
         ends up in the last column of the row, rather than the first. This switch means that the faulhaber coefficient in
         [row(x),column(y)] = [x-1,y] * [x,y], rather than [x-1,y-1] * [x,y] as described in the paper. Also it makes more sense
         to me.
-
         Dependencies:
             multiply()
             subtract()
             fraction()
     */
-
     let t = []
     for (let i = 0; i < n + 1; i++) {
         t.push(0)
@@ -467,7 +461,6 @@ function summation(n,x=1) {
     /*  Returns the summation of the first 'n' numbers to the 'x'th power (if entered)
         using Bernoulli's formula. See https://en.wikipedia.org/wiki/Faulhaber%27s_formula
         for a description.
-
         Dependencies:
             sum()
             multiply()
