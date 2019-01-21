@@ -1,6 +1,6 @@
 # JavaScript_function_libraries
 
-Contains math algorithms from my python work ported to JavaScript.
+Contains math algorithms from my python work ported to JavaScript. All are pure js and have no external dependencies
 
 Functions include:
 
