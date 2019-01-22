@@ -71,7 +71,11 @@ function dateDif(a,b=false,p='m',exact=false) {
     }
 
     function difMo(a,b) {
-        // ex. a = 20180228, b = 20171129
+        /*
+            md_a => 'month & day', d => 'day', m => 'month'
+            ex. a = 20180228, b = 20171129
+            ΦαΞΩΨδγηλμπρτσφωψ϶!ƶɸ×ƒΛΔΓβµ
+        */
         let mths, yrs = difYr(a,b)
         md_a = get(a,'md')                          // a = 0228
         md_b = get(b,'md')                          // b = 1129
@@ -79,12 +83,25 @@ function dateDif(a,b=false,p='m',exact=false) {
         d_b = get(b,'d')                            // y = 29
         m_a = get(a,'m')                            // mth_a = 02
         m_b = get(b,'m')                            // mth_b = 11
-        //  protect for last day of month a < day of month b
-        if (d_a < d_b && d_a === days[m_a - 1]) {
+
+        /*
+            Protect for last day of month a < day of month b and
+            Feb having 29 days during leap years
+        */
+        let lstDayMnth
+        if (get(a,'y') % 4 === 0 && m_a === 2) {    // it's feb in a leap year ∴
+            lstDayMnth = 29                         // last day of month is day 29
+        } else {
+            lstDayMnth = days[m_a - 1]              // normal last day of month
+        }
+        if (d_a < d_b && d_a === lstDayMnth) {
            md_a = get(a,'m') * 100 + d_b
            d_a = d_b
         }
-        // algorithm
+
+        /*
+            Algorithm
+        */
         if (md_a - md_b < 0) {
             mths = Math.floor((1200 + md_a - md_b)/100)
         } else {
