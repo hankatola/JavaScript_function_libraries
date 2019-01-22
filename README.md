@@ -1,11 +1,14 @@
 # JavaScript_function_libraries
 
 Contains math algorithms from my python work ported to JavaScript. All are pure js and have no external library dependencies
+
 Files are:
+
     num.js
     date.js
 
 num.js functions:
+
     sum()       sums 2 numbers &arrays. Handles fraction class
     subtract()  '' 2 numbers & arrays. Handles fraction class
     multiply()  '' 2 numbers & arrays. Handles fraction class
