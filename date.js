@@ -72,10 +72,10 @@ function dateDif(a,b=false,p='m',exact=false) {
 
     function difMo(a,b) {
         /*
-            md_a => 'month & day', d => 'day', m => 'month'
+            md_a -> 'month & day', d -> 'day', m -> 'month'
             ex. a = 20180228, b = 20171129
         */
-        let mths, yrs = difYr(a,b)
+        let mths, yrs = difYr(a,b,true)
         md_a = getDate(a,'md')                          // a = 0228
         md_b = getDate(b,'md')                          // b = 1129
         d_a = getDate(a,'d')                            // x = 28
@@ -84,15 +84,9 @@ function dateDif(a,b=false,p='m',exact=false) {
         m_b = getDate(b,'m')                            // mth_b = 11
 
         /*
-            Protect for last day of month a < day of month b and
-            Feb having 29 days during leap years
+            Protect for last day of month a < day of month b
         */
-        let lstDayMnth
-        if (getDate(a,'y') % 4 === 0 && m_a === 2) {    // it's feb in a leap year ∴
-            lstDayMnth = 29                         // last day of month is day 29
-        } else {
-            lstDayMnth = days[m_a - 1]              // normal last day of month
-        }
+        let lstDayMnth = lastDayOfMonth(m_a,getDate(a,'y'))
         if (d_a < d_b && d_a === lstDayMnth) {
             md_a = getDate(a,'m') * 100 + d_b
             d_a = d_b
@@ -106,15 +100,43 @@ function dateDif(a,b=false,p='m',exact=false) {
         } else {
             mths = Math.floor((md_a - md_b)/100)
         }
-        return yrs * 12 + mths
-    }
+        mths += yrs * 12
 
-    function difMoExact(t,c) {
-
-    }
-
-    function difYr(a,b) {
+        /*
+            Exact, if called
+        */
         if (exact === true) {
+            mths = difMoExact(a,b,mths,m_a,m_b,d_a,d_b)
+        }
+        return mths
+    }
+
+    function difMoExact(a,b,mths,m_a,m_b,d_a,d_b) {
+        let y, y_b = getDate(b,'y'), y_a = getDate(a,'y')
+        m_b += mths
+        if (m_b > 12) {
+            y = Math.floor(m_b/12)
+            m_b -= 12 * y
+        }
+        y_b += y
+        b = y_b * 10000 + m_b * 100 + d_b
+        m_b = getDate(b,'m')
+        /*
+            m_a === m_b ==> mth += (d_a - d_b) / max(i ∈ [m_a])
+            m_a !== m_b ==> mth += (max(i ∈ [m_b]) - d_b) / max(i ∈ [m_b]) + d_a / max(i ∈ [m_a])
+
+        */
+        if (m_a === m_b) {                                      // easy
+            mths += (d_a - d_b) / lastDayOfMonth(m_a,y_a)
+        } else {                                                // harder
+            let ldm_b = lastDayOfMonth(m_b,y_b)
+            mths += ( (ldm_b - d_b) / ldm_b ) + ( d_a / lastDayOfMonth(m_a,y_a) )
+        }
+        return mths
+    }
+
+    function difYr(a,b,ignoreExact=false) {
+        if (exact === true && ignoreExact === false) {
             return difYrExact(a,b)
         } else {
         return Math.floor( (a-b) / 10000 )
@@ -151,7 +173,6 @@ function dateDif(a,b=false,p='m',exact=false) {
         return difDaysExact(t,c) / 7
     }
 
-    let days = [31,28,31,30,31,30,31,31,30,31,30,31]
     if (!a.valueOf()) {a = date(a)}
     if (!b.valueOf()) {b = date(b)}
     a = yyyymmdd(a)
@@ -184,3 +205,9 @@ function minute(d=false) {return date(d).getMinutes()}
 function second(d=false) {return date(d).getSeconds()}
 
 function ms(d=false) {return date(d).getMilliseconds()}
+
+function lastDayOfMonth(m,y=1) {
+    let days = [31,28,31,30,31,30,31,31,30,31,30,31]
+    if (y % 4 === 0 && m === 2) {return 29} // ∵ it's february in a leap year
+    return days[m - 1]                      // standard
+}
