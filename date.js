@@ -35,7 +35,7 @@ function date(y=false,m=false,d=false) {
 
 function dateDif(a,b=false,p='m',exact=false) {
 
-    function get(x,get=0) {
+    function getDate(x,get=0) {
         // git can be y, m, d, ym, or md
         // for example, x = 20181231
         if (get === 'd') {                          // return 31
@@ -43,7 +43,7 @@ function dateDif(a,b=false,p='m',exact=false) {
         } else if (get === 'md') {                  // return 1231
             return x%10000
         } else if (get === 'm') {                   // return 12
-            return Math.floor(get(x,'md') / 100)
+            return Math.floor(getDate(x,'md') / 100)
         } else if (get === 'ym') {                  // return 201812
             return Math.floor(x/100)
         } else {                                    // return 2018
@@ -67,36 +67,35 @@ function dateDif(a,b=false,p='m',exact=false) {
     }
 
     function yyyymmdd(a) {
-        return year(a) * 1000 + month(a) * 100 + day(a)
+        return year(a) * 10000 + month(a) * 100 + day(a)
     }
 
     function difMo(a,b) {
         /*
             md_a => 'month & day', d => 'day', m => 'month'
             ex. a = 20180228, b = 20171129
-            ΦαΞΩΨδγηλμπρτσφωψ϶!ƶɸ×ƒΛΔΓβµ
         */
         let mths, yrs = difYr(a,b)
-        md_a = get(a,'md')                          // a = 0228
-        md_b = get(b,'md')                          // b = 1129
-        d_a = get(a,'d')                            // x = 28
-        d_b = get(b,'d')                            // y = 29
-        m_a = get(a,'m')                            // mth_a = 02
-        m_b = get(b,'m')                            // mth_b = 11
+        md_a = getDate(a,'md')                          // a = 0228
+        md_b = getDate(b,'md')                          // b = 1129
+        d_a = getDate(a,'d')                            // x = 28
+        d_b = getDate(b,'d')                            // y = 29
+        m_a = getDate(a,'m')                            // mth_a = 02
+        m_b = getDate(b,'m')                            // mth_b = 11
 
         /*
             Protect for last day of month a < day of month b and
             Feb having 29 days during leap years
         */
         let lstDayMnth
-        if (get(a,'y') % 4 === 0 && m_a === 2) {    // it's feb in a leap year ∴
+        if (getDate(a,'y') % 4 === 0 && m_a === 2) {    // it's feb in a leap year ∴
             lstDayMnth = 29                         // last day of month is day 29
         } else {
             lstDayMnth = days[m_a - 1]              // normal last day of month
         }
         if (d_a < d_b && d_a === lstDayMnth) {
-           md_a = get(a,'m') * 100 + d_b
-           d_a = d_b
+            md_a = getDate(a,'m') * 100 + d_b
+            d_a = d_b
         }
 
         /*
@@ -127,6 +126,8 @@ function dateDif(a,b=false,p='m',exact=false) {
     }
 
     function difDays(a,b) {
+        a = date(a)
+        b = date(b)
         if (exact === true) {
             return difDaysExact(a,b)
         } else {
@@ -135,8 +136,6 @@ function dateDif(a,b=false,p='m',exact=false) {
     }
 
     function difDaysExact(a,b) {
-        a = date(a)
-        b = date(b)
         return (a - b) / (1000 * 60 * 60 * 24)
     }
 
@@ -163,9 +162,9 @@ function dateDif(a,b=false,p='m',exact=false) {
     p = getPeriod(p)
     if (p === 'm') {
         return difMo(a,b)
-    } else if (period === 'y') {
+    } else if (p === 'y') {
         return difYr(a,b)
-    } else if (period === 'w') {
+    } else if (p === 'w') {
         return difWk(a,b)
     } else {
         return difDays(a,b)
@@ -176,7 +175,7 @@ function year(d=false) {return date(d).getFullYear()}
 
 function month(d=false) {return date(d).getMonth() + 1}
 
-function day(d=false) {return date(d).getDay()}
+function day(d=false) {return date(d).getDate()}
 
 function hour(d=false) {return date(d).getHours()}
 
