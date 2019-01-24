@@ -103,7 +103,7 @@ let date = {
             return mths
         }
         function difMoExact(a,b,mths,m_a,m_b,d_a,d_b) {
-            let y, y_b = getDate(b,'y'), y_a = getDate(a,'y')
+            let y = 0, y_b = getDate(b,'y'), y_a = getDate(a,'y')
             m_b += mths
             if (m_b > 12) {
                 y = Math.floor(m_b/12)
