@@ -1,7 +1,3 @@
-function parseDate(d) {
-
-}
-
 function date(y=false,m=false,d=false) {
 
     function parseNum(x) {
@@ -137,14 +133,10 @@ function dateDif(a,b=false,p='m',exact=false) {
 
     function difYr(a,b,ignoreExact=false) {
         if (exact === true && ignoreExact === false) {
-            return difYrExact(a,b)
+            return (a-b) / 10000
         } else {
         return Math.floor( (a-b) / 10000 )
         }
-    }
-
-    function difYrExact(t,c) {
-
     }
 
     function difDays(a,b) {
@@ -192,19 +184,33 @@ function dateDif(a,b=false,p='m',exact=false) {
     }
 }
 
-function year(d=false) {return date(d).getFullYear()}
+function year(d=false) {
+    return date(d).getFullYear()
+}
 
-function month(d=false) {return date(d).getMonth() + 1}
+function month(d=false) {
+    return date(d).getMonth() + 1
+}
 
-function day(d=false) {return date(d).getDate()}
+function day(d=false) {
+    return date(d).getDate()
+}
 
-function hour(d=false) {return date(d).getHours()}
+function hour(d=false) {
+    return date(d).getHours()
+}
 
-function minute(d=false) {return date(d).getMinutes()}
+function minute(d=false) {
+    return date(d).getMinutes()
+}
 
-function second(d=false) {return date(d).getSeconds()}
+function second(d=false) {
+    return date(d).getSeconds()
+}
 
-function ms(d=false) {return date(d).getMilliseconds()}
+function ms(d=false) {
+    return date(d).getMilliseconds()
+}
 
 function lastDayOfMonth(m,y=1) {
     let days = [31,28,31,30,31,30,31,31,30,31,30,31]
