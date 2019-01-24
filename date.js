@@ -10,6 +10,9 @@ function date(y=false,m=false,d=false) {
         return y + '/' + m + '/' + d
     }
     let date
+    if (y !== false && isDate(y)) {
+        return y
+    }
     if (y === false && m === false && d === false) {
         date = new Date()
     } else if (y.toString().length > 4 && m === false & d === false) {
@@ -165,8 +168,8 @@ function dateDif(a,b=false,p='m',exact=false) {
         return difDaysExact(t,c) / 7
     }
 
-    if (!a.valueOf()) {a = date(a)}
-    if (!b.valueOf()) {b = date(b)}
+    if (!isDate(a)) {a = date(a)}
+    if (!isDate(b)) {b = date(b)}
     a = yyyymmdd(a)
     b = yyyymmdd(b)
     let aa = a, bb = b
@@ -184,31 +187,63 @@ function dateDif(a,b=false,p='m',exact=false) {
     }
 }
 
+function julian(a=false) {
+    if (a === false) {
+        a = date()
+    }
+    if (!isDate(a)) {
+        a = date(a)
+    }
+    let b = date(year(a) * 10000 + 101)
+    return dateDif(a,b,'days') + 1
+}
+
 function year(d=false) {
-    return date(d).getFullYear()
+    if (!isDate(d)) {
+        d = date(d)
+    }
+    return d.getFullYear()
 }
 
 function month(d=false) {
+    if (!isDate(d)) {
+        d = date(d)
+    }
     return date(d).getMonth() + 1
 }
 
 function day(d=false) {
+    if (!isDate(d)) {
+        d = date(d)
+    }
     return date(d).getDate()
 }
 
 function hour(d=false) {
+    if (!isDate(d)) {
+        d = date(d)
+    }
     return date(d).getHours()
 }
 
 function minute(d=false) {
+    if (!isDate(d)) {
+        d = date(d)
+    }
     return date(d).getMinutes()
 }
 
 function second(d=false) {
+    if (!isDate(d)) {
+        d = date(d)
+    }
     return date(d).getSeconds()
 }
 
 function ms(d=false) {
+    if (!isDate(d)) {
+        d = date(d)
+    }
     return date(d).getMilliseconds()
 }
 
@@ -216,4 +251,16 @@ function lastDayOfMonth(m,y=1) {
     let days = [31,28,31,30,31,30,31,31,30,31,30,31]
     if (y % 4 === 0 && m === 2) {return 29} // ∵ it's february in a leap year
     return days[m - 1]                      // standard
+}
+
+function isDate(x) {
+    let α
+    try {
+        x.getMonth()
+        α = true
+    }
+    catch (i) {
+        α = false
+    }
+    return α
 }
