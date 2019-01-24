@@ -126,7 +126,22 @@ let date = {
         }
         function difYr(a,b,ignoreExact=false) {
             if (exact === true && ignoreExact === false) {
-                return (a-b) / 10000
+                let y = difYr(a,b,true)
+                b += y * 10000
+                let ya = getDate(a,'y'), ma = getDate(a,'m'), da = getDate(a,'d')
+                let yb = getDate(b,'y'), mb = getDate(b,'m'), db = getDate(b,'d')
+                if (ya === yb) {
+                    y += ε.dateDif(a,b,'days',false) / ε.julian(ya*10000 + 1231)
+                } else {
+                    let aBOY = (ya * 10000) + 101
+                    let bBOY = (yb * 10000) + 101
+                    let aEOY = aBOY + 1130
+                    let bEOY = bBOY + 1130
+                    let aRem = ε.dateDif(aBOY, a, 'days', false)
+                    let bRem = ε.dateDif(b, bEOY, 'days', false)
+                    y += aRem / ε.julian(aEOY) + bRem / ε.julian(bEOY)
+                }
+                return y
             } else {
             return Math.floor( (a-b) / 10000 )
             }
